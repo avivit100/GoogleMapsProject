@@ -1,6 +1,7 @@
 import com.aventstack.extentreports.Status;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.PageFactory;
@@ -9,6 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import javax.annotation.PreDestroy;
 import java.util.concurrent.TimeUnit;
 
 //@FiMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -21,8 +23,9 @@ public class MainClass {
     //Screens of the BuyMe site
     static SiteGoogleMaps siteGoogleMaps;
 
+    @Parameters({"browser","runAll"})
     @BeforeClass
-    public static void Initialize() {
+    public static void Initialize(String browser, String runAll) {
         try {
             //Open the log file:
             if(!bLog) {
@@ -34,11 +37,8 @@ public class MainClass {
             System.out.println("ERROR in Log File: " + ex.getMessage());
             return;
         }
-    }
 
-    @Parameters({"browser","runAll"})
-    @Test
-    public void OpenBrowser(String browser, String runAll){
+        //OpenBrowser(String browser, String runAll){
         System.out.println("runAll "+runAll);
         try {
             switch(browser) {
@@ -49,7 +49,7 @@ public class MainClass {
                     break;
                 case "ie":
                     System.setProperty("webdriver.edge.driver", "D:\\Automation\\Installs\\Selenium\\MicrosoftWebDriver.exe");
-                    driver = new InternetExplorerDriver();
+                    driver = new EdgeDriver();
                     LogFile.write(Status.INFO, "Running test in parallel, over browser: " + browser);
                     break;
                 case "firefox":
@@ -72,24 +72,47 @@ public class MainClass {
     }
 
     @Test
-    private void ReadDetails() {
+    private void OpenSite() {
+        //Read details from database & API:
         if (!bDetails) {
             ReadDatabase.GetDetailsFromDB();
             PlaceCoordinatesAPI.GetCoordinates(ReadDatabase.GetCriteria());
             bDetails = true;
         }
-//    }
-//
-//    @Test
-//    private void OpenSite() {
+
+        //Open the site:
         if (!bSite) {
             siteGoogleMaps.SearchCoordinates(ReadDatabase.GetWebSite(), PlaceCoordinatesAPI.getValLAT(), PlaceCoordinatesAPI.getValLNG());
             bSite = true;
         }
     }
 
+    @Parameters("browser")
     @AfterClass
-    public void CloseSite(){
+    public void CloseSite(String browser){
+        try {
+            switch(browser) {
+                case "chrome":
+                    driver.quit();
+                    LogFile.write(Status.PASS,"Driver of chrome is closed.");
+                    break;
+                case "ie":
+                    driver.quit();
+                    LogFile.write(Status.PASS,"Driver of ie is closed.");
+                    break;
+                case "firefox":
+                    LogFile.write(Status.PASS,"Driver of firefox is closed.");
+                   driver.quit();
+                    break;
+            }
+        }
+        catch (NullPointerException ex) {
+            LogFile.write(Status.FAIL,"FAIL in closing the browser: " + ex.getMessage());
+        }
+
+        catch (Exception ex) {
+            LogFile.write(Status.FAIL, "FAIL in closing the browser: " + ex.getMessage());
+        }
         LogFile.CloseLog();
 
     }
