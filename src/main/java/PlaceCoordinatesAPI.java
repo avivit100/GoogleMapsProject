@@ -1,5 +1,4 @@
 import com.aventstack.extentreports.Status;
-import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -12,12 +11,13 @@ public class PlaceCoordinatesAPI {
     private static  double valLAT;
     private static double valLNG;
 
+    /* GetCoordinates - This method GET from google API, the coordinates, by giving the search criteria */
     public static void GetCoordinates(String strCriteria) {
         try {
             // use OKHttp client to create the connection and retrieve data
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("https://maps.googleapis.com/maps/api/place/textsearch/json?query="+strCriteria+"&key=AIzaSyDBmXR_y1SPt2EYc7YNtQHdN4RwjYVtXX4")
+                    .url(Constants.API_GOOGLE + strCriteria + Constants.API_KEY)
                     .build();
 
             // get OKHTTP response
@@ -26,30 +26,26 @@ public class PlaceCoordinatesAPI {
 
             // Convert response to a JSON
             JSONObject mainJsonObject = new JSONObject(response.body().string());
-            JSONArray locArr = mainJsonObject.getJSONArray("results");
+            JSONArray locArr = mainJsonObject.getJSONArray(Constants.API_RESULTS);
             // get Json object
             JSONObject resultsJson1 = locArr.getJSONObject(0);
-            JSONObject resultsJson2 = resultsJson1.getJSONObject("geometry");
-            JSONObject resultsJson3 = resultsJson2.getJSONObject("location");
+            JSONObject resultsJson2 = resultsJson1.getJSONObject(Constants.API_GEOMETRY);
+            JSONObject resultsJson3 = resultsJson2.getJSONObject(Constants.API_LOCATION);
 
-            // Creating Gson instance
-//            Gson gson = new Gson();
-//
-//            // Creating a CoordinatesResult object using Gson
-//            CoordinatesResult coordinates = gson.fromJson(resultsJson3.toString(), CoordinatesResult.class);
-            valLAT = resultsJson3.getDouble("lat");
-            valLNG = resultsJson3.getDouble("lng");
+            valLAT = resultsJson3.getDouble(Constants.API_LAT);
+            valLNG = resultsJson3.getDouble(Constants.API_LNG);
             LogFile.write(Status.PASS, "The Coordinates are read from the JSON file: "+valLAT+", "+valLNG);
-//            return coordinates;
         }
         catch (IOException ex) {
             LogFile.write(Status.FAIL,"FAIL in get coordinates: " + ex.getMessage());
         } catch (JSONException ex) {
             LogFile.write(Status.FAIL,"FAIL in get coordinates: " + ex.getMessage());
         }
-//        return null;
     }
 
+    /* getValLAT - This method returns the LAT value of the location */
     public static double getValLAT(){ return valLAT; }
+
+    /* getValLAT - This method returns the LNG value of the location */
     public static double getValLNG() { return valLNG; }
 }

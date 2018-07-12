@@ -3,7 +3,6 @@
 
     <test name="over1Chrome">
         <parameter name="browser" value="chrome" />
-        <parameter name="runAll" value="true" />
         <classes>
             <class name="MainClass"/>
         </classes>
@@ -11,7 +10,6 @@
 
     <test name="over2IE">
         <parameter name="browser" value="ie" />
-        <parameter name="runAll" value="false" />
         <classes>
             <class name="MainClass"/>
         </classes>
@@ -19,7 +17,6 @@
 
     <test name="over3FireFox">
         <parameter name="browser" value="firefox" />
-        <parameter name="runAll" value="false" />
         <classes>
             <class name="MainClass"/>
         </classes>

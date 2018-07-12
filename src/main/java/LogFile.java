@@ -27,7 +27,7 @@ public class LogFile {
     private static String timeStamp = new SimpleDateFormat("HHmmss_ddMMyyyy").format(Calendar.getInstance().getTime());
 
     //Get the Log file path from the config file:
-    private static String strPath = "C:\\ProjectReport\\";
+    private static String strPath = Constants.LOG_FILE;
 
     //Counter for the print-Shot file name:
     private static int iCount = 0;
