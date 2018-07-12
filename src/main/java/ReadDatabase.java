@@ -35,6 +35,10 @@ public class ReadDatabase {
         catch(SQLException ex){
              LogFile.write(Status.FAIL, "FAIL in reading from the Database: " +ex.getMessage());
         }
+// Testing with broken connection to the database:
+//        strCriteria = "hotels+in+TelAviv";
+//        strWebSite = "https://www.google.com/maps/";
+
         LogFile.write(Status.PASS, "The Test Details are read from the Database. Criteria: "+strCriteria+". Site:"+strWebSite);
     }
 
